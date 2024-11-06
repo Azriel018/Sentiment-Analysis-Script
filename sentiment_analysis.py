@@ -1,10 +1,15 @@
+import os
 from supabase import create_client, Client
 import pandas as pd
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
-# Replace with your Supabase credentials
-#SUPABASE_URL = ""
-#SUPABASE_KEY = ""
+# Fetch Supabase credentials from environment variables
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+
+# Check if credentials are properly fetched
+if not SUPABASE_URL or not SUPABASE_KEY:
+    raise ValueError("Supabase credentials are not set in environment variables")
 
 # Create Supabase client instance
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
