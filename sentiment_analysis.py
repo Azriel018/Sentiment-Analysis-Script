@@ -3,8 +3,8 @@ import pandas as pd
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 # Replace with your Supabase credentials
-SUPABASE_URL = ""
-SUPABASE_KEY = ""
+#SUPABASE_URL = ""
+#SUPABASE_KEY = ""
 
 # Create Supabase client instance
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
