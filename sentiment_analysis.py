@@ -44,10 +44,10 @@ for index, row in feedback_df.iterrows():
 # Calculate the average compound score for each service provider (sp_id)
 compound_score_df = feedback_df.groupby("sp_id")["compound_score"].mean().reset_index()
 
-# Update each service provider's rating (average) in the 'service_provider' table rating coloumn
+# Update each service provider's average compound score in the 'rating' column of the 'service_provider' table
 for index, row in compound_score_df.iterrows():
     supabase.table("service_provider").update({
-        "average_compound_score": row["rating"]
+        "rating": row["compound_score"]
     }).eq("sp_id", row["sp_id"]).execute()
 
-print("Sentiment analysis and compound score calculation job completed.")
+print("Sentiment analysis and rating update job completed.")
