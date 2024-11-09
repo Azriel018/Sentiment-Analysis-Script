@@ -30,30 +30,24 @@ def classify_sentiment(score):
     else:
         return "neutral"
 
-# Function to convert VADER compound score (-1 to 1) to a 0-5 scale
-def compound_to_rating(compound_score):
-    return (compound_score + 1) * 2.5  # Scale from 0 to 5
-
 # Analyze reviews and store sentiment scores and classifications in new columns
 feedback_df["compound_score"] = feedback_df["review"].apply(lambda x: analyzer.polarity_scores(x)["compound"])
 feedback_df["sentiment"] = feedback_df["compound_score"].apply(classify_sentiment)
-feedback_df["rating"] = feedback_df["compound_score"].apply(compound_to_rating)  # Convert to 0-5 rating scale
 
-# Update feedback records in Supabase with sentiment scores and 0-5 ratings
+# Update feedback records in Supabase with sentiment scores
 for index, row in feedback_df.iterrows():
     supabase.table("feedback").update({
         "compound_score": row["compound_score"],
-        "sentiment": row["sentiment"],
-        "rating": row["rating"]
+        "sentiment": row["sentiment"]
     }).eq("feedback_id", row["feedback_id"]).execute()
 
-# Calculate average rating for each service provider (sp_id) based on new 0-5 ratings
-rating_df = feedback_df.groupby("sp_id")["rating"].mean().reset_index()
+# Calculate the average compound score for each service provider (sp_id)
+compound_score_df = feedback_df.groupby("sp_id")["compound_score"].mean().reset_index()
 
-# Update each service provider's rating in the 'service_provider' table
-for index, row in rating_df.iterrows():
+# Update each service provider's rating (average) in the 'service_provider' table rating coloumn
+for index, row in compound_score_df.iterrows():
     supabase.table("service_provider").update({
-        "rating": row["rating"]
+        "average_compound_score": row["rating"]
     }).eq("sp_id", row["sp_id"]).execute()
 
-print("Sentiment analysis and rating calculation job completed.")
+print("Sentiment analysis and compound score calculation job completed.")
