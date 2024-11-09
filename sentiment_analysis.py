@@ -18,36 +18,16 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 analyzer = SentimentIntensityAnalyzer()
 
 # Fetch data from the 'feedback' table
-response = supabase.table("feedback").select("feedback_id, pet_owner_id, sp_id, review").execute()
+response = supabase.table("feedback").select("feedback_id, review").execute()
 feedback_df = pd.DataFrame(response.data)
 
-# Function to classify sentiment based on VADER's compound score
-def classify_sentiment(score):
-    if score >= 0.05:
-        return "positive"
-    elif score <= -0.05:
-        return "negative"
-    else:
-        return "neutral"
-
-# Analyze reviews and store sentiment scores and classifications in new columns
+# Analyze each review to get the compound score and update the feedback table
 feedback_df["compound_score"] = feedback_df["review"].apply(lambda x: analyzer.polarity_scores(x)["compound"])
-feedback_df["sentiment"] = feedback_df["compound_score"].apply(classify_sentiment)
 
-# Update feedback records in Supabase with sentiment scores
+# Update feedback records in Supabase with only the compound score
 for index, row in feedback_df.iterrows():
     supabase.table("feedback").update({
-        "compound_score": row["compound_score"],
-        "sentiment": row["sentiment"]
+        "compound_score": row["compound_score"]
     }).eq("feedback_id", row["feedback_id"]).execute()
 
-# Calculate the average compound score for each service provider (sp_id)
-compound_score_df = feedback_df.groupby("sp_id")["compound_score"].mean().reset_index()
-
-# Update each service provider's average compound score in the 'rating' column of the 'service_provider' table
-for index, row in compound_score_df.iterrows():
-    supabase.table("service_provider").update({
-        "rating": row["compound_score"]
-    }).eq("sp_id", row["sp_id"]).execute()
-
-print("Sentiment analysis and rating update job completed.")
+print("Compound score calculation and update job completed.")
