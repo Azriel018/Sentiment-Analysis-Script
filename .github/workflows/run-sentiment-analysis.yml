@@ -3,7 +3,7 @@ name: Run Sentiment Analysis
 on:
   workflow_dispatch:  # Enables manual trigger
   schedule:
-    - cron: '*/2 * * * *'  # Runs the workflow every 2 minutes
+    - cron: '0 */6 * * *'  # Runs the workflow every 6 hours
 
 jobs:
   run-script:
