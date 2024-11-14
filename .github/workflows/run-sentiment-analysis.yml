@@ -3,7 +3,7 @@ name: Run Sentiment Analysis
 on:
   workflow_dispatch:  # Enables manual trigger
   schedule:
-    - cron: '*/1 * * * *'  # Runs the workflow every 1 minute
+    - cron: '0 */6 * * *'  # Runs the workflow every 6 hours
 
 jobs:
   run-script:
@@ -11,7 +11,7 @@ jobs:
 
     steps:
     - name: Check out the repository
-      uses: actions/checkout@v2  # Checks out the code from the repo
+      uses: actions/checkout@v2  # Checks the python code from the repo
 
     - name: Set up Python
       uses: actions/setup-python@v2
