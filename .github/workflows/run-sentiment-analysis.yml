@@ -1,8 +1,8 @@
 name: Run Sentiment Analysis
 
 on:
-  schedule:
-    - cron: '*/1 * * * *'  # Runs the workflow every 1 minute
+  # schedule:
+  #   - cron: '*/1 * * * *'  # Runs the workflow every 1 minute
 
 jobs:
   run-script:
